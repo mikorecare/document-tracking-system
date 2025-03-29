@@ -1,4 +1,4 @@
-<form class="form-horizontal mt-3" method="POST" action="{{ route('register') }}">
+<form class="form-horizontal mt-3" method="POST" action="{{ $isAdmin == 0 ? route('admin.register') : route('register') }}">
     @csrf
 
     <div class="form-group mb-3 row">
@@ -45,9 +45,9 @@
             <select name="office_division" id="office_division" required class="form-control">
                 <option value="" selected disabled>Choose Office</option>
                 <option value="records and archives unit">RECORDS and ARCHIVES Unit</option>
-                <option value="ict unit">ICT Unit</option>
+                <option value="bids and awards unit">BIDS and AWARDS Unit</option>
                 <option value="payments unit">PAYMENTS Unit</option>
-                <option value="supply unit">SUPPLY Unit</option>
+                <option value="procurement unit">PROCUREMENT Unit</option>
             </select>
             @error('office_division')
                 <span class="invalid-feedback" role="alert">
@@ -69,6 +69,7 @@
         </div>
     </div>
 
+    @if($isAdmin == 1)
     <div class="form-group mb-3 row">
         <div class="col-12">
             <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
@@ -87,8 +88,12 @@
                 autocomplete="new-password" placeholder="Confirm Password">
         </div>
     </div>
+    @else
+        <input type="hidden" name="password" value="12345678">
+        <input type="hidden" name="password_confirmation" value="12345678">
+    @endif
 
-    <input type="hidden" name="is_admin" value="{{ $isAdmin ?? 0 }}">
+    <input type="hidden" name="is_admin" value="{{ $isAdmin }}">
 
     <div class="form-group text-center row mt-3 pt-1">
         <div class="col-12">

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DocumentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\RegisterController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,9 +21,13 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::post('/admin/register', [App\Http\Controllers\Auth\RegisterController::class, 'registerAdmin'])
+    ->name('admin.register')
+    ->middleware('auth');
+
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('admin/dashboard', [App\Http\Controllers\HomeController::class, 'adminHome'])->name('admin.home');
-
+Route::post('change-password', [ChangePasswordController::class, 'store'])->name('change-password');
 //Route::resource('document', DocumentController::class);
 Route::get('document/create', [DocumentController::class, 'create'])->name('document.create');
 //Route::get('document/create/{acronym}', [DocumentController::class, 'create'])->name('document.create');

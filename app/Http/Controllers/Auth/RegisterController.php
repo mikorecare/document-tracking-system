@@ -1,13 +1,15 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -38,26 +40,46 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest')->except('registerAdmin');
+
+        $this->middleware('auth')->only('registerAdmin');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'first_name' => ['required', 'string', 'max:255'],
-            'middle_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
+            'first_name'      => ['required', 'string', 'max:255'],
+            'middle_name'     => ['required', 'string', 'max:255'],
+            'last_name'       => ['required', 'string', 'max:255'],
             'office_division' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'is_admin' => ['required', 'integer']
+            'email'           => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password'        => ['required', 'string', 'min:8', 'confirmed'],
+            'is_admin'        => ['required', 'integer'],
         ]);
+    }
+
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        Auth::login($user);
+
+        return redirect($this->redirectPath());
+    }
+
+    public function registerAdmin(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $admin = Auth::user();
+
+        event(new Registered($user = $this->create($request->all())));
+              
+        Auth::login($admin);
+
+        return redirect()->back()->with('success', 'User registered successfully.');
     }
 
     /**
@@ -68,14 +90,26 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        if (auth()->user() && auth()->user()->is_admin == 1) {
+            return User::create([
+                'first_name'      => $data['first_name'],
+                'middle_name'     => $data['middle_name'],
+                'last_name'       => $data['last_name'],
+                'office_division' => $data['office_division'],
+                'email'           => $data['email'],
+                'password'        => Hash::make('12345678'),
+                'is_admin'        => (int) $data['is_admin'],
+            ]);
+        }
+
         return User::create([
-            'first_name' => $data['first_name'],
-            'middle_name' => $data['middle_name'],
-            'last_name' => $data['last_name'],
+            'first_name'      => $data['first_name'],
+            'middle_name'     => $data['middle_name'],
+            'last_name'       => $data['last_name'],
             'office_division' => $data['office_division'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'is_admin' => (int) $data['is_admin'],
+            'email'           => $data['email'],
+            'password'        => Hash::make($data['password']),
+            'is_admin'        => (int) $data['is_admin'],
         ]);
     }
 }
