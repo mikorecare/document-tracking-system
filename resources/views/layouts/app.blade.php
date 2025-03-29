@@ -62,11 +62,23 @@
 
                     <div class="d-flex">
                         <div class="dropdown d-inline-block user-dropdown">
+                            @if(Auth::user()->is_admin == 1)
+                                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                    &plus; Add User
+                                </button>
+                            @endif
+                        
                             <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="rounded-circle header-profile-user" src="{{ asset('assets/images/users/user-profile-icon-free-vector.jpg') }}"
                                     alt="Header Avatar">
-                                <span class="d-none d-xl-inline-block ms-1">{{ Str::ucfirst(Auth::user()->first_name) }}</span>
+                                    <span class="d-none d-xl-inline-block ms-1">
+                                        {{ Str::ucfirst(Auth::user()->first_name) }} 
+                                        @if(Auth::user()->is_admin == 1)
+                                            (Admin)
+                                        @endif
+                                    </span>
+                                    
                                 <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -270,6 +282,19 @@
                 $('#datatable-buttons').DataTable();
                 } );
         </script> --}}
+        <div class="modal fade" id="registerModal" tabindex="1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registerModalLabel">Register New User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @include('auth.forms.register-form', ['is_admin' => 0])
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
 
