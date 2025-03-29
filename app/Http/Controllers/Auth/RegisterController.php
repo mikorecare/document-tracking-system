@@ -56,6 +56,7 @@ class RegisterController extends Controller
             'office_division' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'is_admin' => ['required', 'integer']
         ]);
     }
 
@@ -74,6 +75,7 @@ class RegisterController extends Controller
             'office_division' => $data['office_division'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'is_admin' => (int) $data['is_admin'],
         ]);
     }
 }

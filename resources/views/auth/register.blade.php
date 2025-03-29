@@ -122,6 +122,7 @@
                                     </div>
                                 </div>
 
+                                <input type="hidden" name="is_admin" value="1">
 
                                 {{-- <div class="form-group mb-3 row">
                                     <div class="col-12">
