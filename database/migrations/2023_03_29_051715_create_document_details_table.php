@@ -16,7 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('document_code');
             $table->string('type');
+            $table->string('forward_to');
             $table->string('origin');
+            $table->string('status');
+            $table->string('remarks');
             $table->string('status_name'); // Updated from 'subject' to 'status_name'
             $table->timestamps();
         });

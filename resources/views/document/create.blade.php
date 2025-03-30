@@ -10,6 +10,17 @@
     td:nth-child(4) { width: 350px; }
     td:nth-child(5) { width: 100px; }
     td:nth-child(6) { width: 50px; }
+
+    .modal-fullscreen .modal-content {
+        height: 80vh;
+        width: 40vw;
+        margin: 20px auto;
+    }
+
+    .status-list-container {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 </style>
 
 <div class="container-fluid">
@@ -28,34 +39,51 @@
                                     <h5 class="modal-title secondary">Action</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                                <form action="{{ route('document.store') }}" method="POST">
+                                <form id="saveDocumentForm" class="form-horizontal mt-3" method="POST" action="{{ route('document.store') }}">
                                     @csrf
+                                    @method('POST')
                                     <div class="modal-body">
+                                        <div id="response-message"></div>
                                         <div class="mb-3">
-                                            <label class="form-label"><b>Type</b></label>
-                                            <select name="type" class="form-control" required>
+                                            <label class="form-label"><b>Document Code</b></label>
+
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="toggleMode" checked>
+                                                <label class="form-check-label" for="toggleMode">Auto</label>
+                                            </div>
+
+                                            <input type="text" id="document_code" name="document_code" class="form-control" disabled />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="type"><b>Type</b></label>
+                                            <select id="type" name="type" class="form-control" required>
                                                 <option value="" selected disabled>Select...</option>
-                                                <option value="Request for Certificate of No Pending Case">Request for Certificate of No Pending Case</option>
-                                                <option value="Invitation Letters">Invitation Letters</option>
-                                                <option value="Employers' Notices">Employers' Notices</option>
-                                                <option value="Complaints">Complaints</option>
-                                                <option value="Report on Compliance">Report on Compliance</option>
-                                                <option value="Inspection Requests">Inspection Requests</option>
-                                                <option value="Certified True Copies">Certified True Copies</option>
-                                                <option value="Others">Others</option>
+                                                <option value="Purchase Request (PR)">Purchase Request (PR)</option>
+                                                <option value="BAC Resolution Award">BAC Resolution Award</option>
+                                                <option value="Notice of Award">Notice of Award</option>
+                                                <option value="Notice to Proceed">Notice to Proceed</option>
+                                                <option value="Contract Agreement">Contract Agreement</option>
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Status</label>
-                                            <input type="text" name="status" class="form-control" required>
+                                            <label for="statusSelect" class="form-label">Status</label>
+                                            <select id="statusSelect" name="status" class="form-control" data-bs-toggle="modal" data-bs-target="#statusModal">
+                                                <option value="" selected disabled>Select Status</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Origin</label>
-                                            <textarea name="origin" class="form-control" required></textarea>
+                                            <label for="origin" class="form-label">Origin</label>
+                                            <textarea id="origin" name="origin" class="form-control" required></textarea>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Forward To</label>
-                                            <input type="text" name="forward_to" class="form-control" required>
+                                            <label for="forward_to" class="form-label">Forward To</label>
+                                            <select id="forward_to" type="text" name="forward_to" class="form-control" required>
+                                                <option value="" selected disabled>Choose Office</option>
+                                                <option value="records and archives unit">RECORDS and ARCHIVES Unit</option>
+                                                <option value="bids and awards unit">BIDS and AWARDS Unit</option>
+                                                <option value="payments unit">PAYMENTS Unit</option>
+                                                <option value="procurement unit">PROCUREMENT Unit</option>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Status Name</label>
@@ -66,9 +94,10 @@
                                             <textarea name="remarks" class="form-control" required></textarea>
                                         </div>
                                     </div>
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-success">Save</button>
+                                        <button type="button" class="btn btn-success" id="saveDocument">Save</button>
                                     </div>
                                 </form>
                             </div>
@@ -157,4 +186,225 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">Select Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="statusSearch" class="form-control mb-2" placeholder="Search status...">
+                <div class="status-list-container">
+                    <ul id="statusList" class="list-group">
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        const statusOptions = [
+            "Cancelled",
+            "Received and forwarded to Pre-Screening",
+            "Annual Procurement Plan was created",
+            "APP Quarterly is generated",
+            "APP Quarterly : Bidders Quoted",
+            "APP Quarterly : Bidder Awarded",
+            "Received for Public Bidding",
+            "Item/Project Included for Procurement through Public Bidding",
+            "BAC Deliberation",
+            "Pre-Procurement",
+            "Pre-Bid",
+            "Preparation of Bidding Documents",
+            "Advertisement Period (Start)",
+            "Posting at PhilGEPS and PGBh Website for Pre-Bidding",
+            "Advertisement Period (Posting to PHILGEPS)",
+            "Posting of Bid Opportunities in Conspicuous Places",
+            "Advertisement Period (Preparation of Notices)",
+            "Inclusion in Notice of Bid Conference",
+            "Preparation of Bid Documents",
+            "Pre-Bid Conference",
+            "For Supplemental Bid Bulletin at PhilGEPS, PGBh Website, and etc.",
+            "Selling of Bid Documents to Prospective Supplier",
+            "Bidding Documents Available for Sale",
+            "Advertisement Period (End)",
+            "Bid Opening and Bid Evaluation",
+            "Bid Opening",
+            "First Failure of Bidding, for Rebidding",
+            "Preparation of Resolution for Rebidding",
+            "Resolution for Rebidding for Signature/Approval",
+            "Resolution for Rebidding Duly Approved",
+            "Posting at PhilGEPS and PGBh Website for Rebidding",
+            "Re-advertisement Period (Start)",
+            "Resolution for Negotiated Mode of Procurement",
+            "Re-Advertisement Period (Posting to PHILGEPS)",
+            "Post-Qualification",
+            "Notice of Post-Disqualification for Lowest Bidder, for Rebidding",
+            "Notice of Post-Disqualification, for Rebidding",
+            "Notice of Post-Disqualification, for Negotiated Mode",
+            "Notice of Successful Post-Qualification",
+            "Re-Advertisement Period (Preparation of Notices)",
+            "Re-Advertisement Period (End)",
+            "Preparation of Resolution of Award",
+            "Resolution of Award for Signature",
+            "Resolution of Award for Approval",
+            "Notice of Award for Receipt of Winning Supplier",
+            "Re-Bid Opening",
+            "Notice of Award Duly Received by Winning Supplier",
+            "Post Qualification Process",
+            "Resolution for Alternative (2nd Failure)",
+            "Notice of Award Posting at PhilGEPS and PGBh Website",
+            "Performance Bond Received from Supplier",
+            "Preparation of Contract",
+            "Contract for Signature of Winning Supplier",
+            "Contract for Signature/Approval of HOPE",
+            "Contract for Notarization",
+            "Contract Duly Notarized",
+            "Letter Before Post Qualification (Forwarded)",
+            "Preparation of Notice to Proceed",
+            "Notice to Proceed for Approval",
+            "Notice to Proceed for Receipt of Winning Supplier",
+            "Notice to Proceed Duly Received by Winning Supplier",
+            "Letter Before Post Qualification (Received)",
+            "Letter Before Post Qualification Preparation (Received)",
+            "Contract and Notice to Proceed Posting at PhilGEPS",
+            "Bid Evaluation and Post Qualification Preparation",
+            "Letter Before Post Qualification Preparation (Forwarded)",
+            "Item for Delivery / Start of Project",
+            "Bid Evaluation and Post Qualification Preparation",
+            "Bid Evaluation and Post Qualification Signature",
+            "Bid Evaluation and Post Qualification (Forwarded to TWG)",
+            "Bid Evaluation and Post Qualification Signature (Received)",
+            "Abstract and BAC Resolution of Award (Released)",
+            "Abstract and BAC Resolution for Award Preparation",
+            "Abstract and BAC Resolution of Award (Received)",
+            "Bid Awarding (BAC Signature)",
+            "Abstract and BAC Resolution of Award (Released)",
+            "Abstract and BAC Resolution of Award (Received)",
+            "Abstract and BAC Resolution of Award (Released)",
+            "Abstract and BAC Resolution of Award (Released)",
+            "Abstract and BAC Resolution of Award (Received for GO)",
+            "Archiving at Records Section",
+            "Abstract and BAC Resolution of Award (Released)",
+            "Change Procurement Type",
+            "Abstract and BAC Resolution of Award Approval Date",
+            "Abstract and BAC Resolution of Award (Received)",
+            "Notice of Award Preparation & Review (Forwarded)",
+            "Notice of Award Preparation & Review (Received)",
+            "Notice of Award (Released and Forwarded to GO)",
+            "Notice of Award (Received for GO Signature)",
+            "Notice of Award (Released and Forwarded to BAC)",
+            "Notice of Award Approval Date",
+            "Notice of Award (Received from GO)",
+            "Notice of Award (Released and forwarded to Supplier)",
+            "Notice of Award (Received Supplier Signature)",
+            "Posting to PHILGEPS",
+            "Purchase Order/Contract & Notice to Proceed Generation",
+            "Purchase Order/Contract and Notice to Proceed",
+            "Released Approved Documents to End-User"
+        ].sort();
+
+        const $statusList = $("#statusList");
+        const $statusSelect = $("#statusSelect");
+        const $statusSearch = $("#statusSearch");
+
+        populateStatusList = () => {
+            $statusList.empty();
+            $.each(statusOptions, function (index, status) {
+            let $li = $("<li>")
+                .addClass("list-group-item list-group-item-action")
+                .text(status)
+                .css("cursor", "pointer")
+                .on("click", function (e) {
+                    e.stopPropagation();
+                    $statusSelect.html(`<option value="${status}" selected>${status}</option>`);
+                    $("#statusModal").modal("hide");
+                    $("#myModal").modal("show");
+                });
+
+                $statusList.append($li);
+            });
+        }
+
+        populateStatusList();
+
+        $statusSearch.on("keyup", function () {
+            let searchText = $(this).val().toLowerCase();
+            $("#statusList li").each(function () {
+                let text = $(this).text().toLowerCase();
+                $(this).toggle(text.includes(searchText));
+            });
+        });
+
+        $statusSelect.on("click", function () {
+            $("#statusModal").modal("show");
+        });
+    });
+
+    $(document).ready(function () {
+
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+        });
+
+        $("#saveDocument").on("click", function (e) {
+            e.preventDefault();
+            
+            $.ajax({
+                url: "{{ route('document.store') }}",
+                method: "POST",
+                data: $("#saveDocumentForm").serialize(),
+                success: function (response) {
+                    $("#response-message").html(
+                        `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Document Successfully Created
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+
+                    $("#saveDocumentForm")[0].reset();
+                    
+                    setTimeout(function () {
+                        $("#myModal").modal("hide");
+                    }, 1100);
+
+                    setTimeout(function () {
+                        window.location.href = "{{ route('document.received') }}";
+                    }, 1100);
+                },
+                error: function (xhr) {
+                    let errorMessage = "Something went wrong";
+                    console.log(xhr.responseJSON);
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    $("#response-message").html(
+                        `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${errorMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                    );
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        $('#toggleMode').change(function() {
+            if ($(this).is(':checked')) {
+                $('#document_code').prop('disabled', true).val('');
+            } else {
+                $('#document_code').prop('disabled', false);
+            }
+        });
+    });
+</script>
 @endsection

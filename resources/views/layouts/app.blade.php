@@ -84,6 +84,7 @@
                             <div class="dropdown-menu dropdown-menu-end">
                                 <!-- item-->
                                 <a class="dropdown-item" href="#"><i class="ri-user-line align-middle me-1"></i> Profile</a>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="ri-lock-password-line align-middle me-1"></i> Change Password</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="{{ route('logout') }}" onclick="event.preventDefault();
                                 document.getElementById('logout-form').submit();"><i class="ri-shut-down-line align-middle me-1 text-danger"></i> Logout</a>
@@ -171,12 +172,12 @@
                                 </a>
                             </li>
 
-                            <li>
+                            {{-- <li>
                                 <a href="{{ route('document.rejected') }}" class=" waves-effect"><span class="badge bg-danger float-end">{{ rejectedTotal() }}</span>
                                     <i class="ri-calendar-2-line"></i>
                                     <span>REJECTED</span>
                                 </a>
-                            </li>
+                            </li> --}}
 
                             <li>
                                 <a href="{{ route('document.receivedHistory') }}" class=" waves-effect"><span class="badge bg-success float-end"></span>
@@ -282,19 +283,13 @@
                 $('#datatable-buttons').DataTable();
                 } );
         </script> --}}
-        <div class="modal fade" id="registerModal" tabindex="1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="registerModalLabel">Register New User</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        @include('auth.forms.register-form', ['is_admin' => 0])
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-modal id="registerModal" title="Register New User">
+            @include('auth.forms.register-form', ['isAdmin' => 0])
+        </x-modal>
+        
+        <x-modal id="changePasswordModal" title="Change Password">
+            @include('auth.forms.change-password-form')
+        </x-modal>
 
     </body>
 

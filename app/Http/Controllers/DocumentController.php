@@ -18,6 +18,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class DocumentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -213,12 +217,18 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         try {
-            // Ensure generateDocumentNumber exists
             if (!method_exists($this, 'generateDocumentNumber')) {
                 throw new \Exception('generateDocumentNumber method is missing.');
             }
     
-            $document_code = $this->generateDocumentNumber();
+            if (!empty($request->document_code)) {
+                if ($this->documentNumberExists($request->document_code)) {
+                    return response()->json(["message" => "Document code already exist"], 422);
+                }
+                $document_code = $request->document_code;
+            } else {
+                $document_code = $this->generateDocumentNumber();
+            }
     
             DB::transaction(function () use ($request, $document_code) {
                 $user = auth()->user();
@@ -232,6 +242,10 @@ class DocumentController extends Controller
                     'type' => $request->type,
                     'origin' => $request->origin,
                     'subject' => $request->subject,
+                    'status' => $request->status,
+                    'status_name'=> $request->status_name,
+                    'forward_to' => $request->forward_to,
+                    'remarks' => $request->remarks
                 ]);
     
                 DocumentTracking::create([
@@ -259,20 +273,20 @@ class DocumentController extends Controller
         }
     }
     
-
+    /**
+     * Check if the document code already exists.
+     */
 
     /**
      * Generate code
      */
      function generateDocumentNumber(){
-        $number = mt_rand(100000, 999999); // better than rand()
-        
-        // call the same function if the barcode exists already
+        $number = mt_rand(100000, 999999);
+
         if ($this->documentNumberExists($number)) {
             return $this->generateRegistrationNumber();
         } 
 
-        // otherwise, it's valid and can be used
         return $number;
     }
 
