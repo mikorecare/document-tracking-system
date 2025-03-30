@@ -185,7 +185,7 @@
                         
                         <li>
                             <a href="{{ route('document.receivedHistory') }}" class="waves-effect">
-                                <span class="badge bg-success float-end"></span>
+                                <span class="badge bg-success float-end">{{ receivedHistoryTotal() }}</span>
                                 <i class="ri-history-line"></i>
                                 <span>RECEIVED HISTORY</span>
                             </a>

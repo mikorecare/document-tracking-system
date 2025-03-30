@@ -272,11 +272,6 @@ class DocumentController extends Controller
                     'user_id' => $user->id,
                     'document_detail_id' => $documentDetail->id,
                 ]);
-    
-                ReceivedHistory::create([
-                    'user_id' => $user->id,
-                    'document_detail_id' => $documentDetail->id,
-                ]);
             });
     
             Alert::success('Success', 'Document created successfully!');
@@ -294,14 +289,14 @@ class DocumentController extends Controller
     /**
      * Generate code
      */
-     function generateDocumentNumber(){
-        $number = mt_rand(100000, 999999);
-
-        if ($this->documentNumberExists($number)) {
-            return $this->generateRegistrationNumber();
-        } 
-
-        return $number;
+    function generateDocumentNumber() {
+        $datePart = date('Ymd');
+        do {
+            $randomPart = mt_rand(1000, 9999);
+            $documentNumber = $datePart . $randomPart;
+        } while ($this->documentNumberExists($documentNumber));
+    
+        return $documentNumber;
     }
 
     function documentNumberExists($code){

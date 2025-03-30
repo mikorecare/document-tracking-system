@@ -35,6 +35,17 @@ function incomingTotal()
     return $query->count();
 }
 
+function receivedHistoryTotal()
+{
+    $query = DocumentTracking::where('status', 'released'); // Assuming 'received' was meant to be 'incoming'
+
+    if (auth()->user()->is_admin == 0) {
+        $query->where('office_division', auth()->user()->office_division);
+    }
+
+    return $query->count();
+}
+
 function outgoingTotal()
 {
     $query = Outgoing::with('user');
