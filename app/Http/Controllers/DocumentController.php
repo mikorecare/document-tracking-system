@@ -111,74 +111,92 @@ class DocumentController extends Controller
 
     public function allDocuments()
     {
-        $documentTrackings = DocumentTracking::where('office_division', auth()->user()->office_division)
-        ->where('status', 'received')
-        ->with('user','documentDetail')
-        ->get();
-        return view('document.received',compact('documentTrackings'));
+        $query = DocumentTracking::where('status', 'received')->with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query->where('office_division', auth()->user()->office_division);
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.received', compact('documentTrackings'));
     }
-
+    
     public function received()
     {
-        $documentTrackings = DocumentTracking::where('office_division', auth()->user()->office_division)
-        ->where('status', 'received')
-        ->with('user','documentDetail')
-        ->get();
-        return view('document.received',compact('documentTrackings'));
+        $query = DocumentTracking::where('status', 'received')->with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query->where('office_division', auth()->user()->office_division);
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.received', compact('documentTrackings'));
     }
-
+    
     public function incoming()
     {
-        $documentTrackings = DocumentTracking::where('office_division', auth()->user()->office_division)
-        ->where('status', 'incoming')
-        ->with('user','documentDetail')
-        ->get();
-        return view('document.incoming',compact('documentTrackings'));
+        $query = DocumentTracking::where('status', 'received')->with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query->where('office_division', auth()->user()->office_division);
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.incoming', compact('documentTrackings'));
     }
-
+    
     public function receivedHistory()
     {
-        $receivedHistories = ReceivedHistory::with('user','documentDetail')->get()
-        ->filter(function ($r){
-            return $r->user->office_division == auth()->user()->office_division;
-        });
-
-        // $documentTrackings = Outgoing::where('office_division', auth()->user()->office_division)
-        // ->with('user','documentDetail')
-        // ->get();
-        return view('document.received_histories',compact('receivedHistories'));
+        $query = ReceivedHistory::with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query = $query->whereHas('user', function ($q) {
+                $q->where('office_division', auth()->user()->office_division);
+            });
+        }
+    
+        $receivedHistories = $query->get();
+        return view('document.received_histories', compact('receivedHistories'));
     }
-
+    
     public function outgoing()
     {
-        $documentTrackings = Outgoing::with('user','documentDetail')->get()
-        ->filter(function ($o){
-            return $o->user->office_division == auth()->user()->office_division;
-        });
-
-        // $documentTrackings = Outgoing::where('office_division', auth()->user()->office_division)
-        // ->with('user','documentDetail')
-        // ->get();
-        return view('document.outgoing',compact('documentTrackings'));
+        $query = Outgoing::with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query = $query->whereHas('user', function ($q) {
+                $q->where('office_division', auth()->user()->office_division);
+            });
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.outgoing', compact('documentTrackings'));
     }
-
+    
     public function rejected()
     {
-        $documentTrackings = DocumentTracking::where('office_division', auth()->user()->office_division)
-        ->where('status', 'rejected')
-        ->with('user','documentDetail')
-        ->get();
-        return view('document.rejected',compact('documentTrackings'));
+        $query = DocumentTracking::where('status', 'rejected')->with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query->where('office_division', auth()->user()->office_division);
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.rejected', compact('documentTrackings'));
     }
-
+    
     public function tracked()
     {
-        $documentTrackings = DocumentTracking::where('office_division', auth()->user()->office_division)
-        ->where('status', 'rejected')
-        ->with('user','documentDetail')
-        ->get();
-        return view('document.tracked',compact('documentTrackings'));
+        $query = DocumentTracking::where('status', 'rejected')->with('user', 'documentDetail');
+    
+        if (auth()->user()->is_admin == 0) {
+            $query->where('office_division', auth()->user()->office_division);
+        }
+    
+        $documentTrackings = $query->get();
+        return view('document.tracked', compact('documentTrackings'));
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -251,7 +269,7 @@ class DocumentController extends Controller
                 DocumentTracking::create([
                     'user_id' => $user->id,
                     'document_detail_id' => $documentDetail->id,
-                    'office_division' => $user->office_division,
+                    'office_division' => $documentDetail->forward_to,
                 ]);
     
                 DocumentTrace::create([

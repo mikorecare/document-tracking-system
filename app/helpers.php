@@ -4,48 +4,46 @@ use App\Models\Outgoing;
 
 function receivedTotal()
 {
-    $total = DocumentTracking::where('office_division', auth()->user()->office_division)
-    ->where('status', 'received')
-    ->get()
-    ->count();
+    $query = DocumentTracking::where('status', 'received');
 
-    return $total;
+    if (auth()->user()->is_admin == 0) {
+        $query->where('office_division', auth()->user()->office_division);
+    }
+
+    return $query->count();
 }
 
 function rejectedTotal()
 {
-    $total = DocumentTracking::where('office_division', auth()->user()->office_division)
-    ->where('status', 'rejected')
-    ->get()
-    ->count();
-    return $total;
+    $query = DocumentTracking::where('status', 'rejected');
+
+    if (auth()->user()->is_admin == 0) {
+        $query->where('office_division', auth()->user()->office_division);
+    }
+
+    return $query->count();
 }
 
 function incomingTotal()
 {
-    // $documentTrackings = DocumentTracking::all();
+    $query = DocumentTracking::where('status', 'received'); // Assuming 'received' was meant to be 'incoming'
 
-    // $total = $documentTrackings->filter(function($d){
-    //                 return $d->office_division == auth()->user()->office_division &&  $d->status == 'released';
-    //             })->count();
+    if (auth()->user()->is_admin == 0) {
+        $query->where('office_division', auth()->user()->office_division);
+    }
 
-    $total = DocumentTracking::where('office_division', auth()->user()->office_division)
-    ->where('status', 'incoming')
-    ->get()
-    ->count();
-
-    return $total;
-
+    return $query->count();
 }
 
 function outgoingTotal()
 {
-    $total = Outgoing::with('user')->get()->filter(function($o){
-                    return $o->user->office_division == auth()->user()->office_division;
-                })->count();
-    return $total;
+    $query = Outgoing::with('user');
+
+    if (auth()->user()->is_admin == 0) {
+        $query->whereHas('user', function ($q) {
+            $q->where('office_division', auth()->user()->office_division);
+        });
+    }
+
+    return $query->count();
 }
-
-
-
-?>
