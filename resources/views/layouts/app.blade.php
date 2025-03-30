@@ -142,56 +142,62 @@
                             @endif --}}
                             
                             @if (Auth::user()->is_admin == 1)
-                                <li>
-                                    <a href="{{ route('document.create') }}" class=" waves-effect"><span class="badge bg-warning float-end"></span>
-                                        <i class="ri-calendar-2-line"></i>
-                                        <span>ALL DOCUMENTS</span>
-                                    </a>
-                                </li>
-                            @endif
-                           
-                            
                             <li>
-                                <a href="{{ route('document.incoming') }}" class=" waves-effect"><span class="badge bg-warning float-end">{{  incomingTotal() }}</span>
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>INCOMING</span>
+                                <a href="{{ route('document.create') }}" class="waves-effect">
+                                    <span class="badge bg-warning float-end"></span>
+                                    <i class="ri-file-list-3-line"></i>
+                                    <span>ALL DOCUMENTS</span>
                                 </a>
                             </li>
-
-                            <li>
-                                <a href="{{ route('document.received') }}" class=" waves-effect"><span class="badge bg-success float-end">{{ receivedTotal() }}</span>
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>RECEIVED</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('document.outgoing') }}" class=" waves-effect"><span class="badge bg-info float-end">{{ outgoingTotal() }}</span>
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>OUTGOING</span>
-                                </a>
-                            </li>
-
-                            {{-- <li>
-                                <a href="{{ route('document.rejected') }}" class=" waves-effect"><span class="badge bg-danger float-end">{{ rejectedTotal() }}</span>
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>REJECTED</span>
-                                </a>
-                            </li> --}}
-
-                            <li>
-                                <a href="{{ route('document.receivedHistory') }}" class=" waves-effect"><span class="badge bg-success float-end"></span>
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>RECEIVED HISTORY</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('document.tracked') }}" class=" waves-effect">
-                                    <i class="ri-calendar-2-line"></i>
-                                    <span>TRACK DOCUMENTS</span>
-                                </a>
-                            </li>
+                        @endif
+                        
+                        <li>
+                            <a href="{{ route('document.incoming') }}" class="waves-effect">
+                                <span class="badge bg-warning float-end">{{ incomingTotal() }}</span>
+                                <i class="ri-mail-download-line"></i>
+                                <span>INCOMING</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="{{ route('document.received') }}" class="waves-effect">
+                                <span class="badge bg-success float-end">{{ receivedTotal() }}</span>
+                                <i class="ri-inbox-line"></i>
+                                <span>RECEIVED</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="{{ route('document.outgoing') }}" class="waves-effect">
+                                <span class="badge bg-info float-end">{{ outgoingTotal() }}</span>
+                                <i class="ri-mail-send-line"></i>
+                                <span>OUTGOING</span>
+                            </a>
+                        </li>
+                        
+                        {{-- <li>
+                            <a href="{{ route('document.rejected') }}" class="waves-effect">
+                                <span class="badge bg-danger float-end">{{ rejectedTotal() }}</span>
+                                <i class="ri-close-circle-line"></i>
+                                <span>REJECTED</span>
+                            </a>
+                        </li> --}}
+                        
+                        <li>
+                            <a href="{{ route('document.receivedHistory') }}" class="waves-effect">
+                                <span class="badge bg-success float-end"></span>
+                                <i class="ri-history-line"></i>
+                                <span>RECEIVED HISTORY</span>
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="{{ route('document.tracked') }}" class="waves-effect">
+                                <i class="ri-search-eye-line"></i>
+                                <span>TRACK DOCUMENTS</span>
+                            </a>
+                        </li>
+                        
                         </ul>
                     </div>
                     <!-- Sidebar -->
