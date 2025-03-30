@@ -150,9 +150,7 @@ class DocumentController extends Controller
         $query = ReceivedHistory::with('user', 'documentDetail');
     
         if (auth()->user()->is_admin == 0) {
-            $query = $query->whereHas('user', function ($q) {
-                $q->where('office_division', auth()->user()->office_division);
-            });
+            $query->where('office_division', auth()->user()->office_division);
         }
     
         $receivedHistories = $query->get();
@@ -164,9 +162,7 @@ class DocumentController extends Controller
         $query = Outgoing::with('user', 'documentDetail');
     
         if (auth()->user()->is_admin == 0) {
-            $query = $query->whereHas('user', function ($q) {
-                $q->where('office_division', auth()->user()->office_division);
-            });
+            $query->where('office_division', auth()->user()->office_division);
         }
     
         $documentTrackings = $query->get();
@@ -336,7 +332,7 @@ class DocumentController extends Controller
         try {
             DB::transaction(function () use ($request, $id){
                 //from incoming.blade.php
-                if($request->status === "incoming"){
+                if($request->status === "outgoing"){
                     $documentTracking =  DocumentTracking::FindOrFail($id);
                     $documentTracking->user_id = auth()->user()->id;
                     $documentTracking->status = $request->status;
@@ -349,8 +345,7 @@ class DocumentController extends Controller
                         'office_division' => $request->office_division,
                     ]);
         
-                        // throw new \Exception("This is a manually thrown exception.");
-                }elseif($request->status === "received"){
+                }elseif($request->status === "released"){
                     $documentTracking =  DocumentTracking::FindOrFail($id);
                     $documentTracking->status = $request->status;
                     $documentTracking->save();

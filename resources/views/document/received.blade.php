@@ -186,9 +186,10 @@
                                                                 </div>
                                                                 <div class="mb-4">
                                                                     <label class="form-label"><b>STATUS: </b></label>
-                                                                    <select name="status" class="form-control" required="true" id="primary-select"> 
-                                                                        <option value="incoming">Release</option>
-                                                                        <option value="rejected">Reject</option>
+                                                                    <select name="status" class="form-control" required="true" id="primary-select">
+                                                                        <option value="" selected="true" disabled>Select...</option>
+                                                                        <option value="outgoing">Outgoing</option>
+                                                                        <option value="released">Release</option>
                                                                     </select>
                                                                 </div>
                                                                 <div class="mb-4" id="secondary-select-container">
@@ -197,9 +198,9 @@
                                                                         <option value="" selected="true" disabled>Select...</option>
                                                                         @php
                                                                              $office_div = [ 'records and archives unit' => 'records and archives unit',
-                                                                                             'ict unit' => 'ict unit',
+                                                                                             'procurement unit' => 'procurement unit',
                                                                                              'payments unit' => 'payments unit',
-                                                                                             'supply unit' => 'supply unit',];
+                                                                                             'bids and awards unit' => 'bids and awards unit',];
     
                                                                               $results = array_filter($office_div, function ($value) {
                                                                                  return $value != Auth::user()->office_division;

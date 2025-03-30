@@ -40,9 +40,7 @@ function outgoingTotal()
     $query = Outgoing::with('user');
 
     if (auth()->user()->is_admin == 0) {
-        $query->whereHas('user', function ($q) {
-            $q->where('office_division', auth()->user()->office_division);
-        });
+        $query->where('office_division', auth()->user()->office_division);
     }
 
     return $query->count();
