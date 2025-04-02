@@ -34,6 +34,7 @@
     width: 130px;
     }
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container-fluid">
 
     <!-- start page title -->
@@ -74,11 +75,12 @@
                                     <tr>
                                         <th>CODE</th>
                                         <th>TYPE</th>
+                                        <th>STATUS NAME</th>
                                         <th>ORIGIN</th>
-                                        <th>SUBJECT</th>
                                         <th>FORWARDED BY</th>
                                         <th>TO</th>
                                         <th>DATE/TIME</th>
+                                        <th>REMARKS</th>
                                         {{-- <th>ACTION</th> --}}
                                     </tr>
                                     </thead>
@@ -86,13 +88,14 @@
                                     <tbody>
                                     @foreach ($documentTrackings as $documentTracking)
                                     <tr>
-                                        <td>{{ $documentTracking->documentDetail->document_code }}</td>
-                                        <td>{{ $documentTracking->documentDetail->type }}</td>
-                                        <td>{{ $documentTracking->documentDetail->origin }}</td>
-                                        <td>{{ $documentTracking->documentDetail->subject }}</td>
-                                        <td>{{ strtoupper($documentTracking->user->office_division) }}<br>- {{ Str::ucfirst(strtolower($documentTracking->user->first_name)) }} {{ Str::ucfirst(strtolower(Str::substr($documentTracking->user->middle_name, 0, 1))) }}. {{ Str::ucfirst(strtolower($documentTracking->user->last_name)) }}</td>
-                                        <td>{{ strtoupper($documentTracking->office_division) }}</td>
-                                        <td>{{ $documentTracking->documentDetail->created_at }}</i></td>
+                                        <td>{{ $documentTracking->documentDetail->document_code ?: 'N/A' }}</td>
+                                        <td>{{ $documentTracking->documentDetail->type ?: 'N/A' }}</td>
+                                        <td>{{ $documentTracking->documentDetail ? $documentTracking->documentDetail->status_name : 'N/A' }}</td>
+                                        <td>{{ $documentTracking->documentDetail->origin ?: 'N/A'}}</td>
+                                        <td>{{ strtoupper($documentTracking->user->office_division) ? : 'N/A'}}<br>- {{ Str::ucfirst(strtolower($documentTracking->user->first_name)) }} {{ Str::ucfirst(strtolower(Str::substr($documentTracking->user->middle_name, 0, 1))) }}. {{ Str::ucfirst(strtolower($documentTracking->user->last_name)) }}</td>
+                                        <td>{{ strtoupper($documentTracking->office_division) ?  : 'N/A' }}</td>
+                                        <td>{{ $documentTracking->documentDetail->created_at ? : 'N/A'}}</i></td>
+                                        <td>{{ $documentTracking->documentDetail ? $documentTracking->documentDetail->remarks : 'N/A' }}</td>
                                         {{-- <td><button  class="ri ri-eye-fill btn btn-danger"  data-bs-toggle="modal" data-bs-target="#myModal-{{ $documentTracking->id }}"></button></td> --}}
                                             {{-- <div class="modal" id="myModal-{{ $documentTracking->id }}">
                                                 <div class="modal-dialog">
@@ -137,6 +140,7 @@
                                             </div> --}}
                                     </tr>
                                     @endforeach
+
                                     </tbody>
                                 </table>
                             </div>

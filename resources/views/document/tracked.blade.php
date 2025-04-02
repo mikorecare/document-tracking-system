@@ -55,7 +55,7 @@
                                 {{-- <span class="text-danger">@error('query'){{ $message }} @enderror</span> --}}
                              </div>
                         </div>
-                        <div id="reader" style="margin: auto;"></div>
+                        {{-- <div id="reader" style="margin: auto;"></div> --}}
                         <div name="result" id="result"></div>
                      </form>
 
@@ -66,7 +66,7 @@
                             <br>
                             Origin: <b>{{ $documentDetail->origin }}</b>
                             <br>
-                            Subject: <b>{{ $documentDetail->subject }}</b>
+                            Status Name: <b>{{ $documentDetail->status_name }}</b>
                         </div>
                         <section id="cd-timeline" class="cd-container">
                             @foreach ($documentTraces as $documentTrace)

@@ -70,8 +70,10 @@
                                     <tr>
                                         <th>CODE</th>
                                         <th>TYPE</th>
+                                        <th>STATUS NAME</th>
                                         <th>ORIGIN</th>
                                         <th>DATE/TIME</th>
+                                        <th>REMARKS</th>
                                         <th>ACTION</th>
                                     </tr>
                                     </thead>
@@ -81,6 +83,7 @@
                                     <tr>
                                         <td>{{ $documentTracking->documentDetail->document_code }}</td>
                                         <td>{{ $documentTracking->documentDetail->type }}</td>
+                                        <td>{{ $documentTracking->documentDetail ? $documentTracking->documentDetail->status_name : 'N/A' }}</td>
                                         <td>{{ $documentTracking->documentDetail->origin }}</td>
                                         <td>{{ $documentTracking->documentDetail->created_at }}</i></td>
                                         
@@ -152,7 +155,7 @@
                                                     </div>
                                                 </div>
                                             </div> --}}
-                                            
+                                    <td>{{ $documentTracking->documentDetail ? $documentTracking->documentDetail->remarks : 'N/A' }}</td>
                                     <td><button type="button" class="ri ri-eye-fill btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ $documentTracking->id }}"></button></td>
 
                                     <!-- Modal -->

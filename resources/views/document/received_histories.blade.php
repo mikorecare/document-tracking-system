@@ -34,6 +34,7 @@
     width: 130px;
     }
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container-fluid">
 
     <!-- start page title -->
@@ -74,10 +75,12 @@
                                     <tr>
                                         <th>CODE</th>
                                         <th>TYPE</th>
+                                        <th>STATUS NAME</th>
                                         <th>ORIGIN</th>
                                         <th>SUBJECT</th>
                                         <th>RECEIVED BY</th>
                                         <th>DATE/TIME</th>
+                                        <th>REMARKS</th>
                                         {{-- <th>ACTION</th> --}}
                                     </tr>
                                     </thead>
@@ -87,10 +90,12 @@
                                     <tr>
                                         <td>{{ $receivedHistory->documentDetail->document_code }}</td>
                                         <td>{{ $receivedHistory->documentDetail->type }}</td>
+                                        <td>{{ $receivedHistory->documentDetail->status_name }}</td>
                                         <td>{{ $receivedHistory->documentDetail->origin }}</td>
                                         <td>{{ $receivedHistory->documentDetail->subject }}</td>
                                         <td>{{ strtoupper($receivedHistory->user->office_division) }}<br>- {{ Str::ucfirst(strtolower($receivedHistory->user->first_name)) }} {{ Str::ucfirst(strtolower(Str::substr($receivedHistory->user->middle_name, 0, 1))) }}. {{ Str::ucfirst(strtolower($receivedHistory->user->last_name)) }}</td>
                                         <td>{{ $receivedHistory->documentDetail->created_at }}</i></td>
+                                        <td>{{ $receivedHistory->documentDetail->remarks }}</td>
                                         {{-- <td><button  class="ri ri-eye-fill btn btn-danger"  data-bs-toggle="modal" data-bs-target="#myModal-{{ $receivedHistory->id }}"></button></td> --}}
                                             {{-- <div class="modal" id="myModal-{{ $receivedHistory->id }}">
                                                 <div class="modal-dialog">

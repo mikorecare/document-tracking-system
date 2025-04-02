@@ -66,8 +66,8 @@
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="statusSelect" class="form-label">Status</label>
-                                            <select id="statusSelect" name="status" class="form-control" data-bs-toggle="modal" data-bs-target="#statusModal">
+                                            <label for="statusSelectAdd" class="form-label">Status</label>
+                                            <select onclick="setStatusSelect('add')" id="statusSelectAdd" name="status" class="form-control" data-bs-toggle="modal" data-bs-target="#statusModal" data-mode="add">
                                                 <option value="" selected disabled>Select Status</option>
                                             </select>
                                         </div>
@@ -145,24 +145,34 @@
                                             <h5 class="modal-title">Edit Document</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-                                        <form action="{{ route('document.update', $document->id) }}" method="POST">
+                                        <form action="{{ route('document.updateEdit', $document->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <div class="modal-body">
                                                 <label>Type</label>
                                                 <select name="type" class="form-control" required>
-                                                    <option value="Request" {{ $document->type == 'Request' ? 'selected' : '' }}>Request</option>
-                                                    <option value="Report" {{ $document->type == 'Report' ? 'selected' : '' }}>Report</option>
+                                                    <option value="Purchase Request (PR)" {{ $document->type == 'Purchase Request (PR)' ? 'selected' : '' }}>Purchase Request (PR)</option>
+                                                    <option value="BAC Resolution Award" {{ $document->type == 'BAC Resolution Award' ? 'selected' : '' }}>BAC Resolution Award</option>
+                                                    <option value="Notice of Award" {{ $document->type == 'Notice of Award' ? 'selected' : '' }}>Notice of Award</option>
+                                                    <option value="Notice to Proceed" {{ $document->type == 'Notice to Proceed' ? 'selected' : '' }}>Notice to Proceed</option>
+                                                    <option value="Contract Agreement" {{ $document->type == 'Contract Agreement' ? 'selected' : '' }}>Contract Agreement</option>
                                                 </select>
 
-                                                <label>Status</label>
-                                                <input type="text" name="status" class="form-control" value="{{ $document->status }}" required>
+                                                <label for="statusSelectEdit" class="form-label">Status</label>
+                                                <select id="statusSelectEdit" onclick="setStatusSelect('edit')" name="status" class="form-control" data-bs-toggle="modal" data-bs-target="#statusModal" data-mode="edit">
+                                                    <option value="{{ $document->status}}" selected>{{ $document->status}}</option>
+                                                </select>
 
                                                 <label>Origin</label>
                                                 <textarea name="origin" class="form-control" required>{{ $document->origin }}</textarea>
 
-                                                <label>Forward To</label>
-                                                <input type="text" name="forward_to" class="form-control" value="{{ $document->forward_to }}" required>
+                                                <label for="forward_to" class="form-label">Forward To</label>
+                                                <select id="forward_to" type="text" name="forward_to" class="form-control" required>
+                                                    <option value="records and archives unit" {{ $document->type == 'records and archives unit' ? 'selected' : '' }}>RECORDS and ARCHIVES Unit</option>
+                                                    <option value="bids and awards unit" {{ $document->type == 'bids and awards unit' ? 'selected' : '' }}>BIDS and AWARDS Unit</option>
+                                                    <option value="payments unit" {{ $document->type == 'payments unit' ? 'selected' : '' }}>PAYMENTS Unit</option>
+                                                    <option value="procurement unit" {{ $document->type == 'procurement unit' ? 'selected' : '' }}>PROCUREMENT Unit</option>
+                                                </select>
 
                                                 <label>Status Name</label>
                                                 <input type="text" name="status_name" class="form-control" value="{{ $document->status_name }}" required>
@@ -206,7 +216,17 @@
     </div>
 </div>
 
-<script>
+<script defer>
+    let statusSelect = "add";
+    const $statusList = $("#statusList");
+    let $statusSelect = statusSelect === "add" ? $("#statusSelectAdd") : $("#statusSelectEdit");
+    const $statusSearch = $("#statusSearch");
+
+
+    const setStatusSelect = (setStatus) => {
+        statusSelect = setStatus;
+    }
+
     $(document).ready(function () {
         const statusOptions = [
             "Cancelled",
@@ -309,27 +329,32 @@
             "Released Approved Documents to End-User"
         ].sort();
 
-        const $statusList = $("#statusList");
-        const $statusSelect = $("#statusSelect");
-        const $statusSearch = $("#statusSearch");
-
         populateStatusList = () => {
             $statusList.empty();
             $.each(statusOptions, function (index, status) {
-            let $li = $("<li>")
-                .addClass("list-group-item list-group-item-action")
-                .text(status)
-                .css("cursor", "pointer")
-                .on("click", function (e) {
-                    e.stopPropagation();
-                    $statusSelect.html(`<option value="${status}" selected>${status}</option>`);
-                    $("#statusModal").modal("hide");
-                    $("#myModal").modal("show");
-                });
+                let $li = $("<li>")
+                    .addClass("list-group-item list-group-item-action")
+                    .text(status)
+                    .css("cursor", "pointer")
+                    .on("click", function (e) {
+                        e.stopPropagation();
+
+                        let $currentStatusSelect = statusSelect === 'add' ? $("#statusSelectAdd") : $("#statusSelectEdit");
+                        $currentStatusSelect.html(`<option value="${status}" selected>${status}</option>`);
+                        $("#statusModal").modal("hide");
+
+                        if (statusSelect === 'add') {
+                            $("#myModal").modal("show");
+                        } else {
+                            const documentId = "{{ $document->id }}";
+                            $("#editModal-" + documentId).modal("show");
+                        }
+                    });
 
                 $statusList.append($li);
             });
-        }
+        };
+
 
         populateStatusList();
 

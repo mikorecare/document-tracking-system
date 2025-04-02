@@ -16,7 +16,7 @@ class DocumentDetail extends Model
         'document_code',
         'type',
         'origin',
-        'status_name', // Ensure this is included
+        'status_name',
         'status',
         'forward_to',
         'remarks',

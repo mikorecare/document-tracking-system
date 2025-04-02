@@ -103,10 +103,10 @@
             <td>{{ $data->created_at }}</td>
           </tr>
           <tr style="height: 70pt">
-            <td style="text-align: center;"><b>SUBJECT</b></td>
+            <td style="text-align: center;"><b>STATUS NAME</b></td>
             <td colspan="2" style="white-space: pre-wrap;
             overflow: hidden;
-            word-wrap: break-word;">{{ $data->subject }}</td>
+            word-wrap: break-word;">{{ $data->status_name }}</td>
           </tr>
           
           <table>
@@ -184,10 +184,10 @@
             <td>{{ $data->created_at }}</td>
           </tr>
           <tr style="height: 70pt">
-            <td style="text-align: center;"><b>SUBJECT</b></td>
+            <td style="text-align: center;"><b>STATUS NAME</b></td>
             <td colspan="2" style="white-space: pre-wrap;
             overflow: hidden;
-            word-wrap: break-word;">{{ $data->subject }}</td>
+            word-wrap: break-word;">{{ $data->status_name }}</td>
           </tr>
         </tbody>
       </table>
