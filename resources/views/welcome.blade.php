@@ -51,7 +51,7 @@
         <ul>
           <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
           <li><a class="nav-link scrollto" href="{{ route('login') }}">Login</a></li>
-          <li><a class="nav-link scrollto" href="{{ route('register') }}">Register</a></li>
+          {{-- <li><a class="nav-link scrollto" href="{{ route('register') }}">Register</a></li> --}}
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
